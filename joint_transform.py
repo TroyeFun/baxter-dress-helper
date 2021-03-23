@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 # coding=utf-8
-from math import pi, cos, sin
+from math import pi, cos, sin, sqrt, atan2
 import numpy as np
+
+def getDHParam(T1):
+    cos_alpha = T1[1,1]
+    sin_alpha = T1[2,1]
+    a = T1[0, 3]
+    d = sqrt(T1[1,3]**2 + T1[2,3]**2)
+    alpha = atan2(sin_alpha, cos_alpha)
+    print("a = {}, d = {}, alpha = {}".format(a, d, alpha))
+    
 
 class JointTransform(object):
     # for right arm only
@@ -60,7 +69,10 @@ class JointTransform(object):
                           [sin(theta), cos(theta), 0, 0],
                           [0, 0, 1, 0],
                           [0, 0, 0, 1]])
-        return thift.dot(Ty.dot(Tp.dot(Tr.dot(rotate))))
+        T1 = thift.dot(Ty.dot(Tp.dot(Tr)))
+        print("i = {}\nT1 = {}".format(i, T1))
+        getDHParam(T1)
+        return T1.dot(rotate)
 
     def deviate_single_link(self, i, theta):
         """
